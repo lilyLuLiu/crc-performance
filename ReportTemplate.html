@@ -2,6 +2,20 @@
 <html>
 
 <body>
+  <h1>regression Check Result</h1>
+  <h2>Time Consumption Regression</h2>
+  <div style="white-space: pre-wrap; word-wrap: break-word; background:#f6f8fa; border-radius:5px;">
+    {{- regression['time']|safe -}}
+  </div>
+  <h2>Memory Consumption Regression</h2>
+  <div style="white-space: pre-wrap; word-wrap: break-word; background:#f6f8fa; border-radius:5px;">
+    {{- regression['memory']|safe -}}
+  </div>
+  <h2>CPU Consumption Regression</h2>
+  <div style="white-space: pre-wrap; word-wrap: break-word; background:#f6f8fa; border-radius:5px;">
+    {{- regression['cpu']|safe -}}
+  </div>
+
   <h1>Time Consumption</h1>
   <h2>CRC Start</h2>
   <p>average time of crc Start by Platform</p>

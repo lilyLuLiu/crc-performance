@@ -1,0 +1,95 @@
+tests:
+  darwin-amd:
+    type: csv
+    file: result/memory_consume_darwin-amd64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      memory-start:
+        direction: -1
+        threshold: 0.1
+      memory-deployment:
+        direction: -1
+        threshold: 0.1
+      memory-stop:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'  
+
+  darwin-arm:
+    type: csv
+    file: result/memory_consume_darwin-arm64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      memory-start:
+        direction: -1
+        threshold: 0.1
+      memory-deployment:
+        direction: -1
+        threshold: 0.1
+      memory-stop:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'
+
+  linux-amd:
+    type: csv
+    file: result/memory_consume_linux-amd64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      memory-start:
+        direction: -1
+        threshold: 0.1
+      memory-deployment:
+        direction: -1
+        threshold: 0.1
+      memory-stop:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'
+
+  linux-arm:
+    type: csv
+    file: result/memory_consume_linux-arm64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      memory-start:
+        direction: -1
+        threshold: 0.1
+      memory-deployment:
+        direction: -1
+        threshold: 0.1
+      memory-stop:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'
+
+  windows-amd:
+    type: csv
+    file: result/memory_consume_windows-amd64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      memory-start:
+        direction: -1
+        threshold: 0.1
+      memory-deployment:
+        direction: -1
+        threshold: 0.1
+      memory-stop:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'

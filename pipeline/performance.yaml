@@ -1,0 +1,111 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: crc-per
+  labels:
+    app.kubernetes.io/version: "1.3"
+    redhat.com/product: openshift-local
+    dev.lifecycle.io/phase: qe
+    openshift-local.redhat.com/component: crc
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.44.x"
+    tekton.dev/categories: build
+    tekton.dev/tags: openshift-local, crc, per
+spec:
+  description: >-
+    This pipeline will get performance data from opensearch database, analyze it and 
+    generate a perforamnce report. The report will be uploaded to s3. If any change 
+    is detected a slack notification will be sent.
+    
+  params:
+    - name: opensearch-secret
+      description: secret containing opensearch credentials
+      default: opensearch
+    - name: aws-credentials
+      default: aws-crcqe-bot
+    - name: s3-bucket
+      description: bucket to upload builds assets and test results
+      default: crcqe-asia
+    - name: s3-path
+      description: folder path inside the bucket to upload builds assets and test results
+      default: nightly/crc/test/
+    - name: slack-webhook-secret  
+      description: secret containing slack webhook url
+      default: slack-webhook-secret
+      
+  tasks:
+    - name: performance
+      params:
+        - name: opensearch-secret
+          value: $(params.opensearch-secret)
+        - name: aws-credentials
+          value: $(params.aws-credentials)
+        - name: s3-bucket
+          value: $(params.s3-bucket)
+        - name: s3-path
+          value: $(params.s3-path)
+        - name: slack-webhook-secret
+          value: $(params.slack-webhook-secret) 
+      taskSpec:
+        params:
+          - name: opensearch-secret
+          - name: aws-credentials
+          - name: s3-bucket
+          - name: s3-path
+          - name: slack-webhook-secret
+        volumes:
+          - name: opensearch-secret
+            secret:
+              secretName: $(params.opensearch-secret)
+          - name: aws-credentials
+            secret:
+              secretName: $(params.aws-credentials)
+          - name: slack-webhook-url
+            secret:
+              secretName: $(params.slack-webhook-secret)
+          - name: workspace
+            emptyDir: {}
+        steps:
+          - name: performance-analyze
+            image: quay.io/rhn_support_lul/crc-performance:v0.1
+            imagePullPolicy: Always
+            volumeMounts:
+              - name: opensearch-secret
+                mountPath: /opt/opensearch-secret
+              - name: workspace
+                mountPath: /opt/storage
+              - name: slack-webhook-url
+                mountPath: /opt/slack-webhook-url
+            script: |
+              #!/bin/sh
+              export OPENSEARCH_HOST=$(cat /opt/opensearch-secret/url)
+              export USERNAME=$(cat /opt/opensearch-secret/username)
+              export PASSWORD=$(cat /opt/opensearch-secret/password)
+              export SLACK_WEBHOOK_URL=$(cat /opt/slack-webhook-url/webhook_url)
+              cd /opt
+              python3 performance_analyze.py
+              python3 regression.py
+              cp -r result /opt/storage/
+          - name: upload-report
+            image: quay.io/crc-org/s3-uploader:v1.0.0
+            imagePullPolicy: Always
+            volumeMounts:
+              - name: aws-credentials
+                mountPath: /opt/aws-credentials
+              - name: workspace
+                mountPath: /opt/storage
+            script: |
+              #!/bin/sh
+              mkdir -p /home/1001/.aws
+              cat <<EOF > /home/1001/.aws/credentials
+              [default]
+              aws_access_key_id     = $(cat /opt/aws-credentials/access-key)
+              aws_secret_access_key = $(cat /opt/aws-credentials/secret-key)
+              EOF
+              cat <<EOF > /home/1001/.aws/config
+              [default]
+              region = $(cat /opt/aws-credentials/region)
+              EOF
+
+              aws s3 cp --recursive /opt/storage/result/ s3://$(params.s3-bucket)/$(params.s3-path)

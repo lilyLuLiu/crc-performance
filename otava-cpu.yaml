@@ -1,0 +1,208 @@
+
+tests:
+  all:
+    type: csv
+    file: result/cpu-Start_analyze_data.csv
+    time_column: timestamp
+    attributes: ["bundle", "platform"]
+    metrics: 
+      - max
+      - Min
+      - Mean
+      - P95
+      - Std
+      - Spike Count
+      - gt_80
+      - lt_20
+      - lt_10
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'
+
+  darwin-amd:
+    type: csv
+    file: result/cpu-Start_darwin-amd64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      max:
+        direction: -1
+        threshold: 0.1
+      Min:
+        direction: -1
+        threshold: 0.1
+      Mean:
+        direction: -1
+        threshold: 0.1
+      P95:
+        direction: -1
+        threshold: 0.1
+      Std:
+        direction: -1
+        threshold: 0.1
+      Spike Count:
+        direction: -1
+        threshold: 0.1
+      gt_80:
+        direction: -1
+        threshold: 0.1
+      lt_20:
+        direction: -1
+        threshold: 0.1
+      lt_10:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'
+
+  darwin-arm:
+    type: csv
+    file: result/cpu-Start_darwin-arm64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      max:
+        direction: -1
+        threshold: 0.1
+      Min:
+        direction: -1
+        threshold: 0.1
+      Mean:
+        direction: -1
+        threshold: 0.1
+      P95:
+        direction: -1
+        threshold: 0.1
+      Std:
+        direction: -1
+        threshold: 0.1
+      Spike Count:
+        direction: -1
+        threshold: 0.1
+      gt_80:
+        direction: -1
+        threshold: 0.1
+      lt_20:
+        direction: -1
+        threshold: 0.1
+      lt_10:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'
+
+  linux-amd:
+    type: csv
+    file: result/cpu-Start_linux-amd64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      max:
+        direction: -1
+        threshold: 0.1
+      Min:
+        direction: -1
+        threshold: 0.1
+      Mean:
+        direction: -1
+        threshold: 0.1
+      P95:
+        direction: -1
+        threshold: 0.1
+      Std:
+        direction: -1
+        threshold: 0.1
+      Spike Count:
+        direction: -1
+        threshold: 0.1
+      gt_80:
+        direction: -1
+        threshold: 0.1
+      lt_20:
+        direction: -1
+        threshold: 0.1
+      lt_10:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'
+
+  linux-arm:
+    type: csv
+    file: result/cpu-Start_linux-arm64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      max:
+        direction: -1
+        threshold: 0.1
+      Min:
+        direction: -1
+        threshold: 0.1
+      Mean:
+        direction: -1
+        threshold: 0.1
+      P95:
+        direction: -1
+        threshold: 0.1
+      Std:
+        direction: -1
+        threshold: 0.1
+      Spike Count:
+        direction: -1
+        threshold: 0.1
+      gt_80:
+        direction: -1
+        threshold: 0.1
+      lt_20:
+        direction: -1
+        threshold: 0.1
+      lt_10:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'
+
+  windows-amd:
+    type: csv
+    file: result/cpu-Start_windows-amd64.csv
+    time_column: timestamp
+    attributes: ["bundle"]
+    metrics: 
+      max:
+        direction: -1
+        threshold: 0.1
+      Min:
+        direction: -1
+        threshold: 0.1
+      Mean:
+        direction: -1
+        threshold: 0.1
+      P95:
+        direction: -1
+        threshold: 0.1
+      Std:
+        direction: -1
+        threshold: 0.1
+      Spike Count:
+        direction: -1
+        threshold: 0.1
+      gt_80:
+        direction: -1
+        threshold: 0.1
+      lt_20:
+        direction: -1
+        threshold: 0.1
+      lt_10:
+        direction: -1
+        threshold: 0.1
+    csv_options:
+      delimiter: ',' 
+      quotechar: '"'
+
+  
+

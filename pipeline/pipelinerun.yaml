@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: performance-analyze-run-
+spec:
+  pipelineRef:
+    resolver: git
+    params:
+      - name: url
+        value: https://github.com/lilyLuLiu/crc-performance
+      - name: revision
+        value: main
+      - name: pathInRepo
+        value: pipeline/performance.yaml
