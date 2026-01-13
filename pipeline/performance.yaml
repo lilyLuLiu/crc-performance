@@ -70,6 +70,13 @@ spec:
           - name: performance-analyze
             image: quay.io/rhn_support_lul/crc-performance:v0.1
             imagePullPolicy: Always
+            resources:
+            requests:
+              memory: 512Mi
+              cpu: "500m"
+            limits:
+              memory: 2Gi
+              cpu: "1"
             volumeMounts:
               - name: opensearch-secret
                 mountPath: /opt/opensearch-secret
