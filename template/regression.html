@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Performance Regression Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            margin: 0;
+            padding: 32px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #1a237e;
+        }
+
+        h2 {
+            margin-top: 32px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 4px;
+            color: #333;
+        }
+
+        .regression-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #212121;
+            border-left: 4px solid #1a73e8;
+            /* 左侧高亮条 */
+        }
+
+        /* 可选：不同类型回归颜色提示 */
+        .time {
+            border-left-color: #e53935;
+        }
+
+        /* 红色时间 */
+        .memory {
+            border-left-color: #43a047;
+        }
+
+        /* 绿色内存 */
+        .cpu {
+            border-left-color: #1e88e5;
+        }
+
+        /* 蓝色CPU */
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Performance Regression Report</h1>
+
+        <h2>Time Consumption Regression</h2>
+        <div class="regression-container time">
+            {{- regression['time']|safe -}}
+        </div>
+
+        <h2>Memory Consumption Regression</h2>
+        <div class="regression-container memory">
+            {{- regression['memory']|safe -}}
+        </div>
+
+        <h2>CPU Consumption Regression</h2>
+        <div class="regression-container cpu">
+            {{- regression['cpu']|safe -}}
+        </div>
+    </div>
+</body>
+
+</html>

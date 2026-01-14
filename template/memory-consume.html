@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Memory Consumption Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            margin: 0;
+            padding: 32px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            margin-top: 48px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 6px;
+        }
+
+        h3,
+        h4 {
+            margin-top: 24px;
+            color: #444;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* 下载区 */
+        .download-list {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+        }
+
+        .download-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .download-list li {
+            margin: 8px 0;
+        }
+
+        .download-list a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .download-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* 表格 */
+        table {
+            width: 100%;
+            max-width: 900px;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        th,
+        td {
+            padding: 10px 14px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f1f3f4;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #fafafa;
+        }
+
+        /* 行内最大 / 最小值 */
+        td.row-max {
+            background-color: #ffe5e5 !important;
+            /* 浅红背景 */
+            color: #b71c1c;
+            /* 深红文字 */
+            font-weight: 600;
+        }
+
+        td.row-min {
+            background-color: #e6f4ea !important;
+            /* 浅绿背景 */
+            color: #1b5e20;
+            /* 深绿色文字 */
+            font-weight: 600;
+        }
+
+        /* 图片 */
+        img {
+            display: block;
+            max-width: 900px;
+            width: 100%;
+            margin: 24px auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Memory Consumption</h1>
+
+        <h3>Original Data</h3>
+        <div class="download-list">
+            <ul>
+                <li><a href="memory_consume_darwin-amd64.csv" download>darwin-amd64-data</a></li>
+                <li><a href="memory_consume_darwin-arm64.csv" download>darwin-arm64-data</a></li>
+                <li><a href="memory_consume_linux-amd64.csv" download>linux-amd64-data</a></li>
+                <li><a href="memory_consume_linux-arm64.csv" download>linux-arm64-data</a></li>
+                <li><a href="memory_consume_windows-amd64.csv" download>windows-amd64-data</a></li>
+            </ul>
+        </div>
+
+        <h2>CRC Start</h2>
+
+        <table>
+            <tr>
+                <th>Platform</th>
+                <th>Average Memory Consumption (MiB)</th>
+            </tr>
+            {% for row in memoryData['platform']['start'] %}
+            <tr>
+                <td>{{ row.category }}</td>
+                <td>{{ "%.2f"|format(row['memory-start']) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h4>Average memory consumption of CRC start by platform and bundle</h4>
+        <table>
+            <tr>
+                <th>Platform</th>
+                {% for row in memoryData['bundle']['start']['darwin-amd64'] %}
+                <th>{{ row.bundle }}</th>
+                {% endfor %}
+            </tr>
+            {% for name, info in memoryData['bundle']['start'].items() %}
+            <tr>
+                <td>{{ name }}</td>
+                {% for row in info %}
+                <td>{{ "%.2f"|format(row['memory-start']) }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <img src="memory-start.png" alt="CRC start memory plot">
+
+        <h2>Deployment</h2>
+
+        <table>
+            <tr>
+                <th>Platform</th>
+                <th>Average Memory Consumption (MiB)</th>
+            </tr>
+            {% for row in memoryData['platform']['deployment'] %}
+            <tr>
+                <td>{{ row.category }}</td>
+                <td>{{ "%.2f"|format(row['memory-deployment']) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h4>Average memory consumption of deployment by platform and bundle</h4>
+        <table>
+            <tr>
+                <th>Platform</th>
+                {% for row in memoryData['bundle']['deployment']['darwin-amd64'] %}
+                <th>{{ row.bundle }}</th>
+                {% endfor %}
+            </tr>
+            {% for name, info in memoryData['bundle']['deployment'].items() %}
+            <tr>
+                <td>{{ name }}</td>
+                {% for row in info %}
+                <td>{{ "%.2f"|format(row['memory-deployment']) }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <img src="memory-deployment.png" alt="Deployment memory plot">
+
+        <h2>CRC Stop</h2>
+
+        <table>
+            <tr>
+                <th>Platform</th>
+                <th>Average Memory Consumption (MiB)</th>
+            </tr>
+            {% for row in memoryData['platform']['stop'] %}
+            <tr>
+                <td>{{ row.category }}</td>
+                <td>{{ "%.2f"|format(row['memory-stop']) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h4>Average memory consumption of CRC stop by platform and bundle</h4>
+        <table>
+            <tr>
+                <th>Platform</th>
+                {% for row in memoryData['bundle']['stop']['darwin-amd64'] %}
+                <th>{{ row.bundle }}</th>
+                {% endfor %}
+            </tr>
+            {% for name, info in memoryData['bundle']['stop'].items() %}
+            <tr>
+                <td>{{ name }}</td>
+                {% for row in info %}
+                <td>{{ "%.2f"|format(row['memory-stop']) }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <img src="memory-stop.png" alt="CRC stop memory plot">
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("table").forEach(table => {
+                const rows = Array.from(table.querySelectorAll("tr")).slice(1);
+                if (rows.length === 0) return;
+
+                rows.forEach(row => {
+                    const cells = Array.from(row.querySelectorAll("td")).slice(1);
+
+                    // 只处理 bundle 横向对比表
+                    if (cells.length <= 1) return;
+
+                    const values = cells
+                        .map(td => parseFloat(td.textContent))
+                        .filter(v => !isNaN(v));
+
+                    if (values.length === 0) return;
+
+                    const max = Math.max(...values);
+                    const min = Math.min(...values);
+
+                    cells.forEach(td => {
+                        const v = parseFloat(td.textContent);
+                        if (v === max) td.classList.add("row-max");
+                        if (v === min) td.classList.add("row-min");
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

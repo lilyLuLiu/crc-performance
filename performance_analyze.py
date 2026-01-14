@@ -168,7 +168,7 @@ def draw_by_platform(item, image_folder, data):
         value['timestamp'] = pd.to_datetime(value['timestamp'])
         plt.plot(value['timestamp'], value[item], label=key)
 
-    plt.title(f"Performance {item} over Time")
+    plt.title(f"{item} over Time")
     plt.xlabel("Time")
     plt.ylabel("Value")
     plt.legend()
@@ -237,16 +237,49 @@ def memory_by_platform(df):
         result[name] = sort_by_platform(df, field)
     return result
 
+def draw_cpu(platfrom, folder, data):
+    plt.figure(figsize=(8, 5), dpi=150)
+    for col in data.select_dtypes(include=['float', 'int']).columns:
+        if col == 'timestamp':
+            continue
+        plt.plot(data['timestamp'], data[col], label=col)
+
+    plt.title(f"{platfrom} over Time")
+    plt.xlabel("Time")
+    plt.ylabel("Value")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"{folder}/{platfrom}.png")
+    plt.close()
+
 def export_cpu_csv(Platform_DATA):
     folder="result"
     Path(folder).mkdir(parents=True, exist_ok=True)
 
     items = ["cpu-Start","cpu-Stop"]
+    cpu_bundle = {}
     for item in items:
+        
         cpudata = get_cpu_data(item, Platform_DATA)
+        bundle_data = {}
         for key, _ in Platform_DATA.items(): 
             filtered_df = cpudata[key]
             filtered_df.to_csv(f"{folder}/{item}_{key}.csv", index=False)
+            #draw_cpu(f"{item}_{key}", folder, filtered_df)
+            indexdata = {}
+            for index in ["max", "Min", "Mean", "P95", "Std", "Spike Count", "gt_80", "lt_20", "lt_10"]:
+                data = sort_by_bundle(filtered_df, index)
+                indexdata[index] = data
+
+            bundle_data[key] = indexdata
+        cpu_bundle[item] = bundle_data
+
+    env = Environment(loader=FileSystemLoader('.'))    
+    templateCpu = env.get_template('template/cpu-consume.html')
+    html_cpu = templateCpu.render(startData=cpu_bundle["cpu-Start"], stopData=cpu_bundle["cpu-Stop"])
+    with open(f"{RESULT_FOLDER}/cpu-consume.html", 'w', encoding='utf-8') as f:
+        f.write(html_cpu)
+    print("✅ HTML file generated: cpu-consume.html")
 
 def generate_html_report(time_platform, memory_platform, Platform_DATA, regression):
     start_time, stop_time = time_by_bundle(Platform_DATA)
@@ -270,9 +303,27 @@ def generate_html_report(time_platform, memory_platform, Platform_DATA, regressi
 
 
     env = Environment(loader=FileSystemLoader('.'))
-    template = env.get_template('ReportTemplate.html')
-    html_output = template.render(timeData=timeData, memoryData=memoryData, regression=regression)
-
+    ## genrate time-consume.html
+    templateTime = env.get_template('template/time-consume.html')
+    html_time = templateTime.render(timeData=timeData)
+    with open(f"{RESULT_FOLDER}/time-consume.html", 'w', encoding='utf-8') as f:
+        f.write(html_time)
+    print("✅ HTML file generated: time-consume.html")
+    ## genrate memory-consume.html
+    templateMemory = env.get_template('template/memory-consume.html')
+    html_memory = templateMemory.render(memoryData=memoryData)
+    with open(f"{RESULT_FOLDER}/memory-consume.html", 'w', encoding='utf-8') as f:
+        f.write(html_memory)
+    print("✅ HTML file generated: memory-consume.html")
+    ## genrate regression.html
+    templateregression = env.get_template('template/regression.html')
+    html_regression = templateregression.render(regression=regression)
+    with open(f"{RESULT_FOLDER}/regression.html", 'w', encoding='utf-8') as f:
+        f.write(html_regression)
+    print("✅ HTML file generated: regression.html")
+    ## genrate Performance_report.html
+    template = env.get_template('template/ReportTemplate.html')
+    html_output = template.render()
     with open(f"{RESULT_FOLDER}/Performance_report.html", 'w', encoding='utf-8') as f:
         f.write(html_output)
     print("✅ HTML file generated: Performance_report.html")
@@ -301,7 +352,7 @@ if __name__ == "__main__":
     export_time_csv(Platform_DATA)
     export_memory_csv(Platform_DATA)
     export_cpu_csv(Platform_DATA)
-    #draw_all(Platform_DATA)
+    draw_all(Platform_DATA)
     regression = get_regression_result()
     generate_html_report(time_platform, memory_platform, Platform_DATA, regression)
     

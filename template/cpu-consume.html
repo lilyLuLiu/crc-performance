@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CPU Consumption Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            margin: 0;
+            padding: 32px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 32px;
+            color: #1a237e;
+        }
+
+        .table-title {
+            text-align: center;
+            font-weight: 600;
+            margin: 12px 0 4px 0;
+            color: #1a237e;
+        }
+
+        .download-list {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin: 0 auto 32px auto;
+        }
+
+        .download-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .download-list li {
+            margin: 8px 0;
+        }
+
+        .download-list a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .download-list a:hover {
+            text-decoration: underline;
+        }
+
+        table {
+            width: 100%;
+            max-width: 900px;
+            border-collapse: collapse;
+            margin: 0 auto 32px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        th,
+        td {
+            padding: 10px 14px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f1f3f4;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #fafafa;
+        }
+
+        td.row-max {
+            background-color: #ffe5e5 !important;
+            color: #b71c1c;
+            font-weight: 600;
+        }
+
+        td.row-min {
+            background-color: #e6f4ea !important;
+            color: #1b5e20;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>CPU Consumption</h1>
+
+    <div class="table-title">Detail Data - CRC Start</div>
+    <div class="download-list">
+        <ul>
+            <li><a href="cpu-Start_darwin-amd64.csv" download>darwin-amd64-data</a></li>
+            <li><a href="cpu-Start_darwin-arm64.csv" download>darwin-arm64-data</a></li>
+            <li><a href="cpu-Start_linux-amd64.csv" download>linux-amd64-data</a></li>
+            <li><a href="cpu-Start_linux-arm64.csv" download>linux-arm64-data</a></li>
+            <li><a href="cpu-Start_windows-amd64.csv" download>windows-amd64-data</a></li>
+        </ul>
+    </div>
+
+    <div class="table-title">Detail Data - CRC Stop</div>
+    <div class="download-list">
+        <ul>
+            <li><a href="cpu_Stop_darwin-amd64.csv" download>darwin-amd64-data</a></li>
+            <li><a href="cpu_Stop_darwin-arm64.csv" download>darwin-arm64-data</a></li>
+            <li><a href="cpu_Stop_linux-amd64.csv" download>linux-amd64-data</a></li>
+            <li><a href="cpu_Stop_linux-arm64.csv" download>linux-arm64-data</a></li>
+            <li><a href="cpu_Stop_windows-amd64.csv" download>windows-amd64-data</a></li>
+        </ul>
+    </div>
+
+    <h1>CRC Start</h1>
+    {% for platform, bundles in startData.items() %}
+    <div class="table-title">{{ platform }}</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Metric / Bundle</th>
+                {% for row in bundles['max'] %}
+                <th>{{ row.bundle }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for metric, data_list in bundles.items() %}
+            <tr>
+                <td>{{ metric }}</td>
+                {% for entry in data_list %}
+                {% set value = entry[metric if metric not in ['Min','Max'] else metric] %}
+                <td>{{ value|int }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+
+    <h1>CRC Stop</h1>
+    {% for platform, bundles in stopData.items() %}
+    <div class="table-title">{{ platform }}</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Metric / Bundle</th>
+                {% for row in bundles['max'] %}
+                <th>{{ row.bundle }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for metric, data_list in bundles.items() %}
+            <tr>
+                <td>{{ metric }}</td>
+                {% for entry in data_list %}
+                {% set value = entry[metric if metric not in ['Min','Max'] else metric] %}
+                <td>{{ value|int }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+
+    <script>
+        // 高亮每行的最大值和最小值
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("table tbody").forEach(tbody => {
+                tbody.querySelectorAll("tr").forEach(row => {
+                    const cells = Array.from(row.querySelectorAll("td")).slice(1);
+                    if (cells.length <= 1) return;
+
+                    const values = cells.map(td => parseFloat(td.textContent));
+                    const max = Math.max(...values);
+                    const min = Math.min(...values);
+
+                    cells.forEach(td => {
+                        const v = parseFloat(td.textContent);
+                        if (v === max) td.classList.add("row-max");
+                        if (v === min) td.classList.add("row-min");
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
