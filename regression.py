@@ -28,21 +28,27 @@ def send_slack_webhook(message):
     except Exception as e:
         print(f"⚠️ Exception occurred while sending Slack notification: {e}")   
 
-
+message=""
 for config in ("otava-time.yaml", "otava-memory.yaml", "otava-cpu.yaml"):
     key=config.replace("otava-","").replace(".yaml","")
+    
     for p in ("darwin-amd", "darwin-arm","linux-amd", "linux-arm", "windows-amd"):
         stdout = otava.run_otava(p, config, "json")
         data = json.loads(stdout)
         #print(data)
         changedata = data.get(p, [])
+        
         for items in changedata:
             changes_list = items.get("changes", [])
             time = items.get("time", 0)
             changedate = get_date(time)
 
             if changedate == get_today():
+                if(len(changes_list)>0):
+                    message += f"CRC performance change found for `{key}` on `{p}` at {changedate}:\n"
                 for change in changes_list:
-                    message=f"change point found for {key} on {p} at {changedate}\n{change.get('metric','')} : {change.get('mean_before','')} => {change.get('mean_after','')}"
-                    send_slack_webhook(message)
-        
+                    message += f"{change.get('metric','')} : {round(float(change.get('mean_before','')))} => {round(float(change.get('mean_after','')))}\n"
+                
+if(message != ""):
+    message += f"Check details in <https://crcqe-asia.s3.ap-south-1.amazonaws.com/nightly/crc/test/Performance_report.html|Performance Report>"
+    send_slack_webhook(message)     
