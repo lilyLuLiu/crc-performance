@@ -47,8 +47,12 @@ for config in ("otava-time.yaml", "otava-memory.yaml", "otava-cpu.yaml"):
                 if(len(changes_list)>0):
                     message += f"CRC performance change found for `{key}` on `{p}` at {changedate}:\n"
                 for change in changes_list:
-                    message += f"{change.get('metric','')} : {round(float(change.get('mean_before','')))} => {round(float(change.get('mean_after','')))}\n"
+                    message += f"{change.get('metric','')} : {round(float(change.get('mean_before','')), 2)} => {round(float(change.get('mean_after','')), 2)}\n"
                 
 if(message != ""):
+    if "time-stop" in message:
+        message += "https://crcqe-asia.s3.ap-south-1.amazonaws.com/nightly/crc/test/time-stop.png"+"\n"
+    if "time-start" in message:
+        message += "https://crcqe-asia.s3.ap-south-1.amazonaws.com/nightly/crc/test/time-start.png"+"\n"
     message += f"Check details in <https://crcqe-asia.s3.ap-south-1.amazonaws.com/nightly/crc/test/Performance_report.html|Performance Report>"
     send_slack_webhook(message)     
