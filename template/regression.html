@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Performance Regression Report</title>
+    <title>Performance degradation Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -67,19 +67,19 @@
 
 <body>
     <div class="container">
-        <h1>Performance Regression Report</h1>
+        <h1>Performance degradation Report</h1>
 
-        <h2>Time Consumption Regression</h2>
+        <h2>Time Usage Regression</h2>
         <div class="regression-container time">
             {{- regression['time']|safe -}}
         </div>
 
-        <h2>Memory Consumption Regression</h2>
+        <h2>Memory Usage Regression</h2>
         <div class="regression-container memory">
             {{- regression['memory']|safe -}}
         </div>
 
-        <h2>CPU Consumption Regression</h2>
+        <h2>CPU Usage Regression</h2>
         <div class="regression-container cpu">
             {{- regression['cpu']|safe -}}
         </div>
